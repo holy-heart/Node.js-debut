@@ -1,11 +1,50 @@
-const express = require('express')
-const morgan = require('morgan')
-const favicon = require('serve-favicon')
-const bodyParser =require('body-parser')
-const {success,getUniqueId}= require('./helper.js')
-let pokemons = require('./mock-pokemon.js')
+const express = require('express');
+const morgan = require('morgan');
+const favicon = require('serve-favicon');
+const {Sequelize, DataTypes} = require('sequelize');
+const bodyParser = require('body-parser');
+
+const { success, getUniqueId } = require('./helper.js');
+let pokemons = require('./mock-pokemon.js');
+const pokemonModel = require("./src/models/pokemon")
+
 const app = express();
+const sequelize = new Sequelize(
+    'pokedex',
+    'root',
+    '',
+    {
+        host: 'localhost',
+        dialect: 'mysql',
+        dialectOptions: {
+            timezone: '+01:00'
+        },
+        logging: false
+    }
+);
 const port = 3000;
+
+//tester la connexion sequelize et mysql
+sequelize.authenticate()
+    .then(_ => console.log("connection is established"))
+    .catch(error => console.error(`connection failed ${error}`))
+
+//connect the modal with the database    
+const M_pokemon = pokemonModel(sequelize, DataTypes)
+sequelize.sync({force: true})
+    .then( _ => {
+        console.log("database pokedex has been successfully synchronized.")
+        pokemons.map(pokemon=>{
+            M_pokemon.create({
+                name: pokemon.name,
+                hp: pokemon.hp,
+                cp: pokemon.cp,
+                picture: pokemon.picture,
+                types: pokemon.types.join()
+            }).then(pokemon=>console.log(pokemon.toJSON()))
+        })
+        
+    })
 
 //j'ai utiliser une chaine de middlewares
 app
@@ -15,6 +54,7 @@ app
 
 //tester mon api rest
 app.get('/', (req, res) => res.send("i am totally insane"));
+
 //afficher l'id et le nom du pokemon 
 app.get('/api/pokemon/:id',(req,res)=> {
     const id=parseInt(req.params.id)
@@ -22,16 +62,19 @@ app.get('/api/pokemon/:id',(req,res)=> {
     const message = 'un pokemon a bien ete trouver'
     res.json(success(message,pokemon))
 })
+
 //afficher le nbr de pokemon
 app.get('/api/pokemons/nbr', (req,res)=>{
     const num= pokemons.length
     res.send(`i have ${num} pokemons on my pokedex`)
 })
+
 //Lsit of all pokemons
 app.get('/api/pokemons/all', (req,res)=>{
     const message2 = 'the full pokemon list with all their informations'
     res.json(success(message2,pokemons))
 })
+
 //adding an new pokemon
 app.post('/api/pokemons/all', (req, res)=>{
     const id =getUniqueId(pokemons)
@@ -40,6 +83,7 @@ app.post('/api/pokemons/all', (req, res)=>{
     const message3= `i added the new pokemon called ${new_pokemon.name}`
     res.json(success(message3,pokemons))
 })
+
 //update a pokemon with his id
 app.put('/api/pokemons/:id',(req,res)=>{
     const id=parseInt(req.params.id)
@@ -51,6 +95,8 @@ app.put('/api/pokemons/:id',(req,res)=>{
     const message=`the pokemon ${pokemonName.name} have been updated`
     res.json(success(message,pokemonUpdated))
 })
+
+//Delette a pokemon
 app.delete('/api/pokemons/:id',(req,res)=>{
     const id=parseInt(req.params.id)
     const pokemondel=pokemons.find(pokemon=>pokemon.id===id)
