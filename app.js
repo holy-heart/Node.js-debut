@@ -1,7 +1,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const favicon = require('serve-favicon')
-const bodyParser =require('body-parser')
+const bodyParser =require('body-parser');
+const Sequelize= require('./src/db/sequelize');
 
 const app = express();
 const port = 3000;
@@ -11,10 +12,17 @@ app
     .use(favicon(__dirname + '/favicon.ico'))
     .use(morgan('dev'))
     .use(bodyParser.json())
+    
+Sequelize.initDb()    
 require('./src/routes/createPokemon')(app)
 require('./src/routes/findByPkPokemons')(app)
 require('./src/routes/deletePokemon')(app)
 require('./src/routes/findAllPokemons')(app)
 require('./src/routes/updatePokemon')(app)
+
+app.use(({res})=>{
+    const message ="data not found, try another url"
+    res.status(404).json({message})
+})
 // Démarrage du serveur Express et écoute des requêtes entrantes sur le port 3000
 app.listen(port, () => console.log(`l'application node est sur : http://localhost:${port}`));
