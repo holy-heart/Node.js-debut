@@ -13,12 +13,14 @@ app
     .use(morgan('dev'))
     .use(bodyParser.json())
     
-Sequelize.initDb()    
+Sequelize.initDb()   
+
 require('./src/routes/createPokemon')(app)
 require('./src/routes/findByPkPokemons')(app)
 require('./src/routes/deletePokemon')(app)
 require('./src/routes/findAllPokemons')(app)
 require('./src/routes/updatePokemon')(app)
+require('./src/routes/login')(app)
 
 app.use(({res})=>{
     const message ="data not found, try another url"
