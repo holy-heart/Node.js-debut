@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt')
 let sequelize
 
 if(process.env.NODE_ENV==='production'){
-  const sequelize = new Sequelize('Database', 'Username', 'password', { //depuis heroku
+  sequelize = new Sequelize('Database', 'Username', 'password', { //depuis heroku
     host: 'localhost',//depuis heroku
     dialect: 'mysql',
     dialectOptions: {
@@ -16,7 +16,7 @@ if(process.env.NODE_ENV==='production'){
     logging: true//depuis heroku
   })
 } else {
-  const sequelize = new Sequelize('pokedex', 'root', '', {
+  sequelize = new Sequelize('pokedex', 'root', '', {
     host: 'localhost',
     dialect: 'mysql',
     dialectOptions: {
@@ -30,7 +30,7 @@ const Pokemon = PokemonModel(sequelize, DataTypes)
 const User= UserModel(sequelize, DataTypes)
 
 const initDb = () => {
-  return sequelize.sync().then(_ => {
+  return sequelize.sync({ force: true }).then(_ => {
     pokemons.map(pokemon => {
       Pokemon.create({
         name: pokemon.name,

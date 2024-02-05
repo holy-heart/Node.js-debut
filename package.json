@@ -4,8 +4,8 @@
   "description": "thats the begining of my journey as a web devloper, we're gonna do an api rest to handle some pokemone",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=production node app.js",
-    "dev": "NODE_ENV=development nodemon app.js"
+    "start": "set NODE_ENV=production && node app.js ",
+    "dev": "set NODE_ENV=development && nodemon app.js"
   },
   "author": "yacine",
   "license": "ISC",
