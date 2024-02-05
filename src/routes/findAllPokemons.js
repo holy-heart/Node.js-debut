@@ -17,6 +17,10 @@ module.exports = (app) => {
           const message =`there is ${count} pokemons corespend to the search ${req.query.name}`
           res.json({message, data : rows})
         })
+        .catch(error =>{
+          const message=`the pokemon list with ${req.query.name} couldn't be carged, sorry and retry later.`
+          res.status(500).json({message, data: error})
+        })
     }
     Pokemon.findAndCountAll({
       order : ['name'], 

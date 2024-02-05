@@ -30,29 +30,27 @@ const Pokemon = PokemonModel(sequelize, DataTypes)
 const User= UserModel(sequelize, DataTypes)
 
 const initDb = () => {
-  return sequelize.sync({ force: true }).then(_ => {
-    pokemons.map(pokemon => {
-      Pokemon.create({
-        name: pokemon.name,
-        hp: pokemon.hp,
-        cp: pokemon.cp,
-        picture: pokemon.picture,
-        types: pokemon.types
-      }).then(pokemon => console.log(pokemon.toJSON()))
-    })
-    bcrypt.hash('sacha1987', 10)
-      .then(hash=>{
-        User.create({
-          username: 'sacha',
-          password: hash
-        })
+  return sequelize.sync({ force: true })
+    .then(_ => {
+      pokemons.map(pokemon => {
+        Pokemon.create({
+          name: pokemon.name,
+          hp: pokemon.hp,
+          cp: pokemon.cp,
+          picture: pokemon.picture,
+          types: pokemon.types
+        })//.then(pokemon => console.log(pokemon.toJSON()))
       })
-    
-      //.then(user => console.log(user.toJSON()))
-      
-      
-      console.log('La base de donnée a bien été initialisée !')
-  })
+      bcrypt.hash('sacha1987', 10)
+        .then(hash=>{
+          User.create({
+            username: 'sacha',
+            password: hash
+          })
+        })//.then(user => console.log(user.toJSON()))
+        
+        console.log('La base de donnée a bien été initialisée !')
+    })
 }
 
 module.exports = {

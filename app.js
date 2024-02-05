@@ -11,7 +11,7 @@ app
     .use(favicon(__dirname + '/favicon.ico'))
     .use(bodyParser.json())
     
-Sequelize.initDb()   
+Sequelize.initDb() // Opération non bloquante. Le code continue à s'exécuter même si l'initialisation de la base de données n'est pas encore terminée.   
 
 app.get('/',(req,res)=>{
     res.json('Tu ne pouras plus courir les minettes...')
