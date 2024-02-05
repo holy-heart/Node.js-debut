@@ -1,19 +1,21 @@
 const express = require('express')
-const morgan = require('morgan')
 const favicon = require('serve-favicon')
 const bodyParser =require('body-parser');
 const Sequelize= require('./src/db/sequelize');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 //j'ai utiliser une chaine de middlewares
 app
     .use(favicon(__dirname + '/favicon.ico'))
-    .use(morgan('dev'))
     .use(bodyParser.json())
     
 Sequelize.initDb()   
+
+app.get('/',(req,res)=>{
+    res.json('Tu ne pouras plus courir les minettes...')
+})
 
 require('./src/routes/createPokemon')(app)
 require('./src/routes/findByPkPokemons')(app)
