@@ -1,35 +1,29 @@
 const { User } = require('../db/sequelize')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const privateKey = require('../auth/private_key')
 module.exports = (app) => {
   app.post('/api/login', (req, res) => {
-  
     User.findOne({where: {username: req.body.username}})
-      .then(user => {
-        if(!user){
-          const message= "the username is doesn't exist"
-          res.status(404).json({message})
+    .then(user => {
+      if(!user){
+        res.status(404).json({message: "the username is doesn't exist"})
+      }
+      require('bcrypt').compare(req.body.password, user.password)
+      .then(Valid => {
+        if(!Valid) {
+          return res.status(401).json({ message: `the password is wrong`, data: user })
         }
-        bcrypt.compare(req.body.password, user.password)
-          .then(isPasswordValid => {
-            if(!isPasswordValid) {
-              const message = `the password is wrong`;
-              return res.status(401).json({ message, data: user })
-            }
-            // JWT
-            const token = jwt.sign(
-              {user: user.id},
-              privateKey,
-              {expiresIn: '24h'}
-            )
-            const message = `user is successfully logged in`;
-            return res.status(200).json({message, data: user, token})
-          })
+        // JWT
+        const token = require('jsonwebtoken').sign(
+          {user: user.id},
+          require('../auth/private_key'),
+          {expiresIn: '24h'}
+        )
+        res.json({message: `user is successfully logged in`, data: user, token})
       })
-      .catch(error=> {
-        message ="the user cannot be connected, retry later."
-        res.status(500).json({message, data: error})
+      .catch(error=>{
+        res.status(500).json({message: "our server cannot verify your password, retry later", data: error})
       })
+    })
+    .catch(error=> {
+      res.status(500).json({message: "the user cannot be connected, retry later.", data: error})})
   })
 }
