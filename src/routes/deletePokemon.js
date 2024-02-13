@@ -4,9 +4,8 @@ module.exports = (app) => {
   app.delete('/api/pokemons/:id', require('../auth/auth'), (req, res) => {
     Pokemon.findByPk(req.params.id)
     .then(pokemon => {
-      if(pokemon===null){
-        const message = `the pokémon ${req.params.id} doesn't exist.`
-        return res.status(404).json({message})
+      if(!pokemon){
+        return res.status(404).json({message:`the pokémon ${req.params.id} doesn't exist.`})
       }
       Pokemon.destroy({
         where: { id: pokemon.id }

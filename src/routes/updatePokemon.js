@@ -10,14 +10,14 @@ module.exports = (app) => {
     .then(_ => {
       Pokemon.findByPk(req.params.id)//return
       .then(pokemon => {
-        if(pokemon===null){
+        if(!pokemon){
           return res.status(404).json({message: `the pokémon ${req.params.id} doesn't exist.`, data: pokemon })
         }
         res.json({message: `Le pokémon ${req.params.id} a bien été modifié.`, data: pokemon })
       })
-      .catch(error => {                                                                                               //remove
-        res.status(500).json({message: `Le pokémon ${req.params.id} a bien été modifié.`, data: error})               //remove
-      })                                                                                                              //remove
+      .catch(error => {                                                                                                                 //remove
+        res.status(500).json({message: `Le pokémon ${req.params.id} n'a pas pu étre modifié. retry later`, data: error})               //remove
+      })                                                                                                                              //remove
     })
     .catch(error => {
       if (error instanceof ValidationError){

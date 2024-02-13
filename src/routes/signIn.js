@@ -13,7 +13,7 @@ module.exports=(app)=>{
             })
             .catch(error => {
                 if (error instanceof UniqueConstraintError) {
-                  return res.status(400).json({ message: 'this name is taken, please enter another username', data: error })
+                    return res.status(400).json({ message: error.message, data: error })
                 }
                 res.status(500).json({ message: "this page couldn't load, please try later", data: error })
             })

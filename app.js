@@ -23,8 +23,7 @@ require('./src/routes/login')(app)
 require('./src/routes/signIn')(app)
 
 app.use(({res})=>{
-    const message ="data not found, try another url"
-    return res.status(404).json({message})
+    return res.status(404).json({message : "data not found, try another url"})
 })
 // Démarrage du serveur Express et écoute des requêtes entrantes sur le port 3000
 app.listen(process.env.PORT || 3000, () => console.log(`l'application node est sur : http://localhost:${process.env.PORT || 3000}`));
